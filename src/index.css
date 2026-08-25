@@ -1,0 +1,288 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Liquid SSH Dashboard — Material Design 3 Design System
+   深色主题 / 默认种子色 #6750A4（MD3 标准 Dynamic Color）
+   ============================================================ */
+
+:root {
+  /* MD3 dark scheme */
+  --md-primary: #d0bcff;
+  --md-on-primary: #381e72;
+  --md-primary-container: #4f378b;
+  --md-on-primary-container: #eadcff;
+  --md-secondary: #ccc2dc;
+  --md-on-secondary: #332d41;
+  --md-secondary-container: #4a4458;
+  --md-on-secondary-container: #e8def8;
+  --md-tertiary: #efb8c8;
+  --md-surface: #141218;
+  --md-surface-dim: #141218;
+  --md-surface-bright: #3b383e;
+  --md-surface-container-lowest: #0e0c12;
+  --md-surface-container-low: #1d1b20;
+  --md-surface-container: #211f26;
+  --md-surface-container-high: #2b2930;
+  --md-surface-container-highest: #36343b;
+  --md-on-surface: #e6e0e9;
+  --md-on-surface-variant: #cac4d0;
+  --md-outline: #938f99;
+  --md-outline-variant: #49454f;
+  --md-error: #f2b8b5;
+  --md-on-error: #601410;
+  --md-scrim: #000;
+
+  --bg-0: var(--md-surface);
+  --txt: var(--md-on-surface);
+  --txt-2: var(--md-on-surface-variant);
+  --accent: var(--md-primary);
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --danger: var(--md-error);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: theme('fontFamily.sans');
+  color: var(--txt);
+  background: var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+/* ---------- Scrollbar ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ============================================================
+   MD3 surface primitives
+   （原来的 Liquid Glass 玻璃/光效/渐变在此全部收敛为 MD3 表面）
+   ============================================================ */
+
+@layer components {
+  /* 基础表面卡片：MD3 surface-container-low，无玻璃模糊/发光 */
+  .glass {
+    position: relative;
+    background: var(--md-surface-container-low);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: 1rem;
+  }
+
+  .glass-strong {
+    background: var(--md-surface-container-high);
+    border-color: var(--md-outline);
+  }
+
+  /* 无背景渐变/光效 */
+  .glass-spotlight {
+    display: none;
+  }
+
+  /* 悬浮状态：表面层次抬升 + 轻微抬起阴影（MD3 悬停状态） */
+  .glass-hover {
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+  }
+  .glass-hover:hover {
+    background: var(--md-surface-container);
+    border-color: var(--md-outline);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* MD3 中性按钮：surface 重叠式（避免浅色 on-surface 与残留反色冲突） */
+  .glass-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-on-surface);
+    background: var(--md-surface-container-high);
+    border: 1px solid var(--md-outline-variant);
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.15s ease;
+  }
+  .glass-btn:hover {
+    background: var(--md-surface-container-highest);
+    border-color: var(--md-outline);
+  }
+  .glass-btn:active {
+    transform: scale(0.97);
+  }
+
+  .text-gradient {
+    color: var(--md-primary);
+  }
+}
+
+/* ============================================================
+   背景
+   ============================================================ */
+
+/* MD3: 纯 surface 背景，去掉 Aurora 动态光斑/网格/噪点 */
+.aurora-field {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: var(--md-surface);
+}
+
+.aurora-blob,
+.aurora-blob-1,
+.aurora-blob-2,
+.aurora-blob-3,
+.aurora-blob-4,
+.aurora-grid,
+.aurora-noise {
+  display: none;
+}
+
+/* ============================================================
+   状态动画
+   ============================================================ */
+
+.dot-online {
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+  animation: ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.dot-offline {
+  animation: warnPulse 1.6s ease-in-out infinite;
+}
+@keyframes ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
+  }
+}
+@keyframes warnPulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.6);
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 0 6px rgba(251, 113, 133, 0);
+  }
+}
+
+/* 数字滚动 / 呼吸 */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes pulseSlow {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 静态细描边（去掉流光动画） */
+.flow-border {
+  position: relative;
+}
+.flow-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1px solid var(--md-outline-variant);
+}
+
+/* 终端玻璃 */
+.terminal-glass {
+  background: var(--md-surface-container-low);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: 1rem;
+}
+.terminal-glass .xterm-viewport {
+  background-color: transparent !important;
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .dot-online,
+  .animate-breathe,
+  .animate-float,
+  .animate-shimmer,
+  .animate-pulse-slow {
+    animation: none !important;
+  }
+}
