@@ -10,6 +10,7 @@ import TerminalPage from './pages/TerminalPage';
 import Files from './pages/Files';
 import Monitoring from './pages/Monitoring';
 import Settings from './pages/Settings';
+import About from './pages/About';
 
 function Shell() {
   const motionEnabled = usePrefsStore((s) => s.motion);
@@ -24,6 +25,7 @@ function Shell() {
             <Route path="/files" element={<Files />} />
             <Route path="/monitoring" element={<Monitoring />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/about" element={<About />} />
             <Route path="*" element={<Dashboard />} />
           </Route>
         </Routes>

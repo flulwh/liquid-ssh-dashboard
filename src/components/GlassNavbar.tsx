@@ -2,6 +2,7 @@ import { NavLink, Link } from 'react-router-dom';
 import {
   Activity,
   FolderOpen,
+  Info,
   LayoutGrid,
   Monitor,
   Search,
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { label: '文件', path: '/files', icon: FolderOpen },
   { label: '监控', path: '/monitoring', icon: Activity },
   { label: '设置', path: '/settings', icon: Settings },
+  { label: '关于', path: '/about', icon: Info },
 ];
 
 /** 顶部导航栏：Apple 风格悬浮玻璃栏 */
