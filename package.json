@@ -15,6 +15,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:all": "node scripts/dev.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },
