@@ -13,3 +13,6 @@ yarn-error.log*
 # Sensitive local data — never commit
 server/servers.json
 server/users.json
+
+# Local tooling / AI specs — keep out of version control
+.trae/
