@@ -24,6 +24,56 @@
 
 ---
 
+## 🌍 Now bilingual — v1.1.0
+
+The whole UI is available in **中文** and **English**. Switch instantly from the language menu in the top-right corner of the navbar. Your choice is persisted in `localStorage`, and the browser's preferred language is used as the first-run fallback.
+
+> 📸 The screenshots below show both the **Chinese** and **English** versions of every screen. Click any image to open the full-resolution file in the [v1.1.0 release](https://github.com/flulwh/liquid-ssh-dashboard/releases/tag/v1.1.0).
+
+### Dashboard / 仪表盘
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![Dashboard zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-01-dashboard-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-01-dashboard-zh.png) | [![Dashboard en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-01-dashboard-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-01-dashboard-en.png) |
+
+### Servers / 服务器
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![Servers zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-02-servers-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-02-servers-zh.png) | [![Servers en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-02-servers-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-02-servers-en.png) |
+
+### Terminal / 终端
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![Terminal zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-03-terminal-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-03-terminal-zh.png) | [![Terminal en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-03-terminal-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-03-terminal-en.png) |
+
+### Files / 文件
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![Files zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-04-files-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-04-files-zh.png) | [![Files en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-04-files-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-04-files-en.png) |
+
+### Monitoring / 监控
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![Monitoring zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-05-monitoring-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-05-monitoring-zh.png) | [![Monitoring en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-05-monitoring-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-05-monitoring-en.png) |
+
+### Settings / 设置
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![Settings zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-06-settings-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-06-settings-zh.png) | [![Settings en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-06-settings-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-06-settings-en.png) |
+
+### About / 关于
+
+| 🇨🇳 中文 | 🇺🇸 English |
+| :---: | :---: |
+| [![About zh](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-07-about-zh.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-07-about-zh.png) | [![About en](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-07-about-en.png)](https://github.com/flulwh/liquid-ssh-dashboard/releases/download/v1.1.0/v1.1.0-07-about-en.png) |
+
+---
+
 > ## ⭐ If this project helps you, please consider giving it a star. It motivates future development.
 
 ---
