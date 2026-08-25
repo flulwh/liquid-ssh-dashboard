@@ -5,9 +5,11 @@ import { RealTerminal } from '../components/RealTerminal';
 import { GlassCard } from '../components/GlassCard';
 import { useServerStore } from '../store/useServerStore';
 import { useTerminalStore } from '../store/useTerminalStore';
+import { useT } from '../i18n/useT';
 import { cn } from '../utils/cn';
 
 export default function TerminalPage() {
+  const { t } = useT();
   const { servers, loading } = useServerStore();
   const { tabs, activeTabId, openTab, closeTab, setActiveTab } = useTerminalStore();
 
@@ -36,9 +38,9 @@ export default function TerminalPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 px-1">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-            Web <span className="text-gradient">SSH 终端</span>
+            {t('terminal.title')}
           </h1>
-          <p className="mt-1 text-sm text-white/45">多标签 · 真实 SSH 会话</p>
+          <p className="mt-1 text-sm text-white/45">{t('terminal.subtitle')}</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -48,12 +50,12 @@ export default function TerminalPage() {
               servers.length === 0 ? (
                 <>
                   <WifiOff className="h-3.5 w-3.5 text-white/40" />
-                  暂无服务器
+                  {t('terminal.noServerYet')}
                 </>
               ) : (
                 <>
                   <Wifi className="h-3.5 w-3.5 text-emerald-400" />
-                  {servers.length} 台
+                  {t('terminal.serverCount', { n: servers.length })}
                 </>
               )
             ) : (
@@ -67,7 +69,7 @@ export default function TerminalPage() {
               disabled={servers.length === 0}
               className="glass-btn !bg-white/10 font-semibold text-white disabled:opacity-40"
             >
-              <Plus className="h-4 w-4" /> 新建连接
+              <Plus className="h-4 w-4" /> {t('terminal.newConnect')}
               <ChevronDown className="h-4 w-4 text-white/50" />
             </button>
 
@@ -82,11 +84,11 @@ export default function TerminalPage() {
                     className="glass glass-strong absolute right-0 top-12 z-20 w-72 overflow-hidden rounded-2xl p-1.5"
                   >
                     <p className="px-3 py-2 text-xs uppercase tracking-wider text-white/40">
-                      选择服务器（后端配置）
+                      {t('terminal.pickServer')}
                     </p>
                     {servers.length === 0 ? (
                       <p className="px-3 py-4 text-sm text-white/40">
-                        尚未配置服务器，请先到「服务器」页面添加。
+                        {t('terminal.noTabHintEmpty')}
                       </p>
                     ) : (
                       servers.map((s) => (
@@ -120,11 +122,9 @@ export default function TerminalPage() {
             <TerminalSquare className="h-7 w-7 text-white/40" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">还没有打开的终端</h3>
+            <h3 className="text-lg font-semibold text-white">{t('terminal.noTab')}</h3>
             <p className="mt-1 text-sm text-white/45">
-              {servers.length === 0
-                ? '尚未配置服务器，请先到「服务器」页面添加后发起 SSH 会话'
-                : '点击「新建连接」开始一段真实 SSH 会话'}
+              {servers.length === 0 ? t('terminal.noTabHintEmpty') : t('terminal.noTabHintReady')}
             </p>
           </div>
         </GlassCard>
@@ -164,7 +164,7 @@ export default function TerminalPage() {
               <RealTerminal key={activeServer.id} server={activeServer} />
             ) : activeTab ? (
               <div className="grid h-full place-items-center text-sm text-white/40">
-                找不到该服务器，可能已被删除，请重新连接。
+                {t('terminal.serverNotFound')}
               </div>
             ) : null}
           </div>
@@ -177,7 +177,7 @@ export default function TerminalPage() {
             </span>
             <span className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
-              SSH · 真实会话
+              {t('terminal.sshReal')}
             </span>
           </div>
         </GlassCard>

@@ -11,6 +11,7 @@ import {
 import type { Server } from '../types';
 import { GlassCard } from './GlassCard';
 import { useTerminalStore } from '../store/useTerminalStore';
+import { useT } from '../i18n/useT';
 
 interface ServerCardProps {
   server: Server;
@@ -21,6 +22,7 @@ interface ServerCardProps {
 
 /** 服务器卡片：名称 / 地址 / 用户 / 端口 + 真实 SSH 连接 */
 export function ServerCard({ server, delay = 0, onEdit, onDelete }: ServerCardProps) {
+  const { t } = useT();
   const navigate = useNavigate();
   const openTab = useTerminalStore((s) => s.openTab);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -56,7 +58,7 @@ export function ServerCard({ server, delay = 0, onEdit, onDelete }: ServerCardPr
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className="glass-btn !p-2"
-              aria-label="更多操作"
+              aria-label={t('serverCard.menu')}
             >
               <MoreHorizontal className="h-4 w-4" />
             </button>
@@ -76,7 +78,7 @@ export function ServerCard({ server, delay = 0, onEdit, onDelete }: ServerCardPr
                     }}
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/80 hover:bg-white/10"
                   >
-                    <Edit3 className="h-4 w-4" /> 编辑
+                    <Edit3 className="h-4 w-4" /> {t('common.edit')}
                   </button>
                   <button
                     onClick={() => {
@@ -85,7 +87,7 @@ export function ServerCard({ server, delay = 0, onEdit, onDelete }: ServerCardPr
                     }}
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-rose-300 hover:bg-rose-400/10"
                   >
-                    <Trash2 className="h-4 w-4" /> 删除
+                    <Trash2 className="h-4 w-4" /> {t('common.delete')}
                   </button>
                 </motion.div>
               </>
@@ -101,7 +103,7 @@ export function ServerCard({ server, delay = 0, onEdit, onDelete }: ServerCardPr
           className="glass-btn flex-1 !bg-white/10 font-semibold text-white"
         >
           <Play className="h-4 w-4 fill-current" />
-          SSH 连接
+          {t('servers.connect')}
         </button>
       </div>
     </GlassCard>

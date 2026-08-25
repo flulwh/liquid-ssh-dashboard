@@ -4,52 +4,61 @@ import { AlertTriangle, Cpu, ScrollText, Send, Sparkles, TerminalSquare, Wand2 }
 import type { AIMessage } from '../types';
 import { GlassCard } from './GlassCard';
 import { useServerStore } from '../store/useServerStore';
+import { useT } from '../i18n/useT';
 import { uid } from '../utils/cn';
 
-const SUGGESTIONS = [
-  { label: '分析服务器状态', icon: Cpu },
-  { label: '检测日志异常', icon: ScrollText },
-  { label: '生成清理命令', icon: TerminalSquare },
-  { label: '性能优化建议', icon: Wand2 },
+interface Suggestion {
+  key: 'analyze' | 'logs' | 'cleanup' | 'optimize';
+  icon: typeof Cpu;
+}
+
+const SUGGESTIONS: Suggestion[] = [
+  { key: 'analyze', icon: Cpu },
+  { key: 'logs', icon: ScrollText },
+  { key: 'cleanup', icon: TerminalSquare },
+  { key: 'optimize', icon: Wand2 },
 ];
 
-function buildReply(input: string, summary: { online: number; total: number }): AIMessage {
+function buildReply(
+  input: string,
+  summary: { online: number; total: number },
+  t: (key: string) => string
+): AIMessage {
   const base: AIMessage = { id: uid('msg'), role: 'assistant', content: '', timestamp: Date.now() };
-  const t = input;
+  const text = input;
 
-  if (/(分析|状态|overview)/.test(t)) {
-    base.content = `当前共 ${summary.total} 台服务器（全部来自真实后端配置）。${
-      summary.total === 0
-        ? '还没有配置任何服务器，可以到「服务器」页面添加。'
-        : '可对任意服务器发起真实 SSH 会话，或到「服务器」页面增删改配置。'
+  if (/(分析|状态|overview|analyze|status)/i.test(text)) {
+    base.content = `${t('aiHelper.reply.analyzeHeader').replace('{{total}}', String(summary.total))}${
+      summary.total === 0 ? t('aiHelper.reply.analyzeEmpty') : t('aiHelper.reply.analyzeReady')
     }`;
     base.kind = 'text';
-  } else if (/(日志|异常|error|log)/.test(t)) {
+  } else if (/(日志|异常|error|log|scan)/i.test(text)) {
     base.kind = 'alert';
-    base.content = '当前控制台不采集日志与指标，因此无法给出异常扫描结果。建议直接在「终端」中登录服务器查看日志。';
-  } else if (/(清理|释放|空间|clean|disk)/.test(t)) {
+    base.content = t('aiHelper.reply.logs');
+  } else if (/(清理|释放|空间|clean|disk)/i.test(text)) {
     base.kind = 'command';
     base.content = 'du -sh /var/log/* | sort -rh | head -n 10\njournalctl --vacuum-size=200M\ndocker system prune -af --volumes';
-  } else if (/(优化|性能|performance|调优)/.test(t)) {
-    base.content = '性能优化建议：\n1. 数据库主机可调整 PostgreSQL `shared_buffers` 至内存的 25%\n2. 边缘节点可开启 HTTP/2 与 Brotli 压缩\n3. 定时器任务错峰调度，避免同一时刻 CPU 峰值';
+  } else if (/(优化|性能|performance|调优|tuning)/i.test(text)) {
+    base.content = t('aiHelper.reply.optimize');
     base.kind = 'suggestion';
-  } else if (/(命令|command|生成)/.test(t)) {
+  } else if (/(命令|command|生成)/.test(text)) {
     base.kind = 'command';
     base.content = 'uptime && free -h && df -h\ntop -bn1 | head -n 20';
   } else {
-    base.content = '我可以帮你分析服务器状态、检测日志异常、生成运维命令并给出性能优化建议。试试下方的快捷指令，或直接描述你的需求。';
+    base.content = t('aiHelper.reply.command');
   }
   return base;
 }
 
 /** AI 运维助手：Apple Intelligence 风格对话卡片 */
 export function AIHelper({ delay = 0 }: { delay?: number }) {
+  const { t } = useT();
   const servers = useServerStore((s) => s.servers);
   const [messages, setMessages] = useState<AIMessage[]>([
     {
       id: 'welcome',
       role: 'assistant',
-      content: '你好，我是 Liquid AI 运维助手。我可以实时分析集群状态，生成可执行的 Shell 命令，并给出优化建议。',
+      content: t('aiHelper.welcome'),
       kind: 'text',
       timestamp: Date.now(),
     },
@@ -73,7 +82,7 @@ export function AIHelper({ delay = 0 }: { delay?: number }) {
     setInput('');
     setThinking(true);
     setTimeout(() => {
-      setMessages((m) => [...m, buildReply(text, summary)]);
+      setMessages((m) => [...m, buildReply(text, summary, t)]);
       setThinking(false);
     }, 700 + Math.random() * 500);
   };
@@ -92,12 +101,12 @@ export function AIHelper({ delay = 0 }: { delay?: number }) {
         </div>
         <div className="min-w-0">
           <h3 className="flex items-center gap-2 text-[15px] font-semibold text-white">
-            AI 运维助手
+            {t('aiHelper.title')}
             <span className="rounded-full bg-aurora-violet/20 px-2 py-0.5 text-[10px] font-medium text-aurora-blue">
-              Apple Intelligence
+              {t('aiHelper.badge')}
             </span>
           </h3>
-          <p className="text-xs text-white/40">实时分析 · 命令生成 · 异常检测</p>
+          <p className="text-xs text-white/40">{t('aiHelper.subtitle')}</p>
         </div>
       </div>
 
@@ -120,12 +129,12 @@ export function AIHelper({ delay = 0 }: { delay?: number }) {
               >
                 {m.kind === 'alert' && (
                   <div className="mb-1.5 flex items-center gap-1.5 text-amber-300">
-                    <AlertTriangle className="h-3.5 w-3.5" /> 检测结果
+                    <AlertTriangle className="h-3.5 w-3.5" /> {t('aiHelper.alert')}
                   </div>
                 )}
                 {m.kind === 'command' ? (
                   <div className="rounded-lg bg-black/40 p-3 font-mono text-[12px] text-emerald-300">
-                    <div className="mb-1 text-[10px] uppercase tracking-wider text-white/30">建议命令</div>
+                    <div className="mb-1 text-[10px] uppercase tracking-wider text-white/30">{t('aiHelper.suggestedCmd')}</div>
                     {m.content}
                   </div>
                 ) : (
@@ -148,7 +157,7 @@ export function AIHelper({ delay = 0 }: { delay?: number }) {
                 />
               ))}
             </span>
-            <span className="text-xs">正在分析…</span>
+            <span className="text-xs">{t('aiHelper.thinking')}</span>
           </motion.div>
         )}
       </div>
@@ -156,9 +165,9 @@ export function AIHelper({ delay = 0 }: { delay?: number }) {
       {/* 快捷指令 */}
       <div className="flex flex-wrap gap-2 px-5 pb-3">
         {SUGGESTIONS.map((s) => (
-          <button key={s.label} onClick={() => send(s.label)} className="glass-btn !py-1.5 text-xs">
+          <button key={s.key} onClick={() => send(t(`aiHelper.suggestions.${s.key}`))} className="glass-btn !py-1.5 text-xs">
             <s.icon className="h-3.5 w-3.5" />
-            {s.label}
+            {t(`aiHelper.suggestions.${s.key}`)}
           </button>
         ))}
       </div>
@@ -170,10 +179,10 @@ export function AIHelper({ delay = 0 }: { delay?: number }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send(input)}
-            placeholder="向 AI 助手提问…"
+            placeholder={t('aiHelper.placeholder')}
             className="w-full bg-transparent text-sm text-white placeholder:text-white/35 focus:outline-none"
           />
-          <button onClick={() => send(input)} className="glass-btn !p-2" aria-label="发送">
+          <button onClick={() => send(input)} className="glass-btn !p-2" aria-label={t('aiHelper.send')}>
             <Send className="h-4 w-4" />
           </button>
         </div>

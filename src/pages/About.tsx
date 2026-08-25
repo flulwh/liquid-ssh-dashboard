@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Clock,
-  Code2,
   ExternalLink,
   GitFork,
   Info,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react';
 import { GlassCard } from '../components/GlassCard';
 import { AnimatedNumber } from '../components/AnimatedNumber';
+import { useT } from '../i18n/useT';
 import { cn } from '../utils/cn';
 
 const REPO_URL = 'https://github.com/flulwh/liquid-ssh-dashboard';
@@ -49,7 +49,7 @@ interface UserData {
 
 const FALLBACK_REPO: RepoData = {
   full_name: 'flulwh/liquid-ssh-dashboard',
-  description: '采用 Material Design 3 深色主题的现代 Web SSH 管理平台',
+  description: 'A modern Web SSH management platform with Material Design 3 dark theme',
   html_url: REPO_URL,
   homepage: REPO_URL,
   stargazers_count: 0,
@@ -64,6 +64,7 @@ const FALLBACK_REPO: RepoData = {
 };
 
 export default function About() {
+  const { t, i18n } = useT();
   const [repo, setRepo] = useState<RepoData | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -96,6 +97,8 @@ export default function About() {
     };
   }, []);
 
+  const dateLocale = i18n.language?.startsWith('en') ? 'en-US' : 'zh-CN';
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -105,16 +108,16 @@ export default function About() {
     >
       <div className="px-1">
         <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-          关<span className="text-[var(--md-primary)]">于</span>
+          {t('about.title')}
         </h1>
         <p className="mt-1 text-sm text-white/45">
-          Liquid SSH Dashboard · 开源信息与作者
+          {t('about.subtitle')}
         </p>
       </div>
 
       {loading ? (
         <GlassCard className="flex items-center justify-center gap-2 py-20 text-sm text-white/50">
-          <Loader2 className="h-4 w-4 animate-spin" /> 正在从 GitHub 获取信息…
+          <Loader2 className="h-4 w-4 animate-spin" /> {t('about.loading')}
         </GlassCard>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -139,7 +142,7 @@ export default function About() {
                 rel="noreferrer"
                 className="glass-btn !bg-white/10 font-semibold text-white"
               >
-                <ExternalLink className="h-4 w-4" /> GitHub
+                <ExternalLink className="h-4 w-4" /> {t('about.github')}
               </a>
             </div>
 
@@ -155,10 +158,10 @@ export default function About() {
 
             {/* 统计网格 */}
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Stat icon={Star} label="Stars" value={repo?.stargazers_count ?? 0} />
-              <Stat icon={GitFork} label="Forks" value={repo?.forks_count ?? 0} />
-              <Stat icon={CircleDot} label="Issues" value={repo?.open_issues_count ?? 0} />
-              <Stat icon={Clock} label="更新时间" date={repo?.updated_at} />
+              <Stat icon={Star} label={t('about.stars')} value={repo?.stargazers_count ?? 0} />
+              <Stat icon={GitFork} label={t('about.forks')} value={repo?.forks_count ?? 0} />
+              <Stat icon={CircleDot} label={t('about.issues')} value={repo?.open_issues_count ?? 0} />
+              <Stat icon={Clock} label={t('about.updated')} date={repo?.updated_at} locale={dateLocale} />
             </div>
           </GlassCard>
 
@@ -173,7 +176,7 @@ export default function About() {
                 </div>
               )}
               <div>
-                <div className="font-semibold text-white">{user?.name ?? 'Liquid Dev'}</div>
+                <div className="font-semibold text-white">{user?.name ?? t('about.author')}</div>
                 <a
                   href={OWNER_URL}
                   target="_blank"
@@ -188,9 +191,9 @@ export default function About() {
             {user?.bio && <p className="mt-3 text-sm leading-relaxed text-white/60">{user.bio}</p>}
 
             <div className="mt-4 space-y-2 text-sm">
-              <Row icon={User} label="仓库数" value={user ? String(user.public_repos) : '—'} />
-              <Row icon={Star} label="关注者" value={user ? String(user.followers) : '—'} />
-              <Row icon={Scale} label="开源协议" value={repo?.license?.spdx_id ?? 'MIT'} />
+              <Row icon={User} label={t('about.repos')} value={user ? String(user.public_repos) : '—'} />
+              <Row icon={Star} label={t('about.followers')} value={user ? String(user.followers) : '—'} />
+              <Row icon={Scale} label={t('about.license')} value={repo?.license?.spdx_id ?? 'MIT'} />
             </div>
           </GlassCard>
         </div>
@@ -199,7 +202,7 @@ export default function About() {
       {offline && (
         <GlassCard className="flex items-center gap-3 p-4 text-xs text-white/45">
           <Info className="h-4 w-4 shrink-0" />
-          暂无法连接 GitHub API，以下为本地兜底信息（仓库地址与作者主页为文档快照）。
+          {t('about.offline')}
         </GlassCard>
       )}
     </motion.div>
@@ -215,11 +218,13 @@ function Stat({
   label,
   value,
   date,
+  locale,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value?: number;
   date?: string;
+  locale?: string;
 }) {
   return (
     <div className="rounded-xl bg-white/[0.04] p-3 ring-1 ring-white/[0.06]">
@@ -229,7 +234,7 @@ function Stat({
       </div>
       {date ? (
         <div className="mt-1 text-sm font-semibold tabular-nums text-white/90">
-          {new Date(date).toLocaleDateString('zh-CN')}
+          {new Date(date).toLocaleDateString(locale)}
         </div>
       ) : (
         <AnimatedNumber value={value ?? 0} className="mt-1 text-lg font-semibold tabular-nums text-white" />

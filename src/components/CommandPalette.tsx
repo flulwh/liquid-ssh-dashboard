@@ -11,10 +11,13 @@ import {
   Settings,
   TerminalSquare,
   Zap,
+  FolderOpen,
+  Info,
 } from 'lucide-react';
 import { useUIStore } from '../store/useUIStore';
 import { useServerStore } from '../store/useServerStore';
 import { useTerminalStore } from '../store/useTerminalStore';
+import { useT } from '../i18n/useT';
 import { cn } from '../utils/cn';
 
 interface CommandItem {
@@ -26,8 +29,9 @@ interface CommandItem {
   run: () => void;
 }
 
-/** 命令面板（⌘K）：全局搜索服务器与快捷操作，类似 Spotlight */
+/** 命令面板（⌘K）：全局搜索服务器与快捷操作 */
 export function CommandPalette() {
+  const { t } = useT();
   const open = useUIStore((s) => s.commandPaletteOpen);
   const close = useUIStore((s) => s.closeCommandPalette);
   const toggle = useUIStore((s) => s.toggleCommandPalette);
@@ -42,25 +46,28 @@ export function CommandPalette() {
 
   const items = useMemo<CommandItem[]>(() => {
     const nav: CommandItem[] = [
-      { id: 'nav-dash', label: '转到仪表盘', subtitle: '导航', icon: LayoutGrid, keywords: 'dashboard home 首页', run: () => navigate('/') },
-      { id: 'nav-servers', label: '转到服务器', subtitle: '导航', icon: ServerIcon, keywords: 'servers 服务器 列表', run: () => navigate('/servers') },
-      { id: 'nav-term', label: '转到终端', subtitle: '导航', icon: TerminalSquare, keywords: 'terminal ssh 终端', run: () => navigate('/terminal') },
-      { id: 'nav-mon', label: '转到监控', subtitle: '导航', icon: Activity, keywords: 'monitoring 监控 cpu 内存', run: () => navigate('/monitoring') },
-      { id: 'nav-set', label: '转到设置', subtitle: '导航', icon: Settings, keywords: 'settings 设置', run: () => navigate('/settings') },
+      { id: 'nav-dash', label: t('nav.dashboard'), subtitle: t('commandPalette.sections.nav'), icon: LayoutGrid, keywords: 'dashboard home', run: () => navigate('/') },
+      { id: 'nav-servers', label: t('nav.servers'), subtitle: t('commandPalette.sections.nav'), icon: ServerIcon, keywords: 'servers list', run: () => navigate('/servers') },
+      { id: 'nav-term', label: t('nav.terminal'), subtitle: t('commandPalette.sections.nav'), icon: TerminalSquare, keywords: 'terminal ssh', run: () => navigate('/terminal') },
+      { id: 'nav-files', label: t('nav.files'), subtitle: t('commandPalette.sections.nav'), icon: FolderOpen, keywords: 'files sftp', run: () => navigate('/files') },
+      { id: 'nav-mon', label: t('nav.monitoring'), subtitle: t('commandPalette.sections.nav'), icon: Activity, keywords: 'monitoring cpu mem', run: () => navigate('/monitoring') },
+      { id: 'nav-set', label: t('nav.settings'), subtitle: t('commandPalette.sections.nav'), icon: Settings, keywords: 'settings', run: () => navigate('/settings') },
+      { id: 'nav-about', label: t('nav.about'), subtitle: t('commandPalette.sections.nav'), icon: Info, keywords: 'about github', run: () => navigate('/about') },
     ];
     const srv: CommandItem[] = servers.map((s) => ({
       id: `srv-${s.id}`,
-      label: `SSH 连接 ${s.name}`,
+      label: `${t('servers.connect')} ${s.name}`,
       subtitle: `${s.username}@${s.host}:${s.port}`,
       icon: Zap,
-      keywords: `${s.name} ${s.host} ${s.username} ssh connect`,
+      keywords: `${s.name} ${s.host} ${s.username} ssh`,
       run: () => {
         openTab(s.id, s.name);
         navigate('/terminal');
       },
     }));
     return [...nav, ...srv];
-  }, [servers, navigate, openTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [servers, navigate, openTab, t]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -73,7 +80,6 @@ export function CommandPalette() {
     );
   }, [items, query]);
 
-  // 全局快捷键 ⌘K / Ctrl+K
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -85,7 +91,6 @@ export function CommandPalette() {
     return () => window.removeEventListener('keydown', onKey);
   }, [toggle]);
 
-  // 打开时重置并聚焦
   useEffect(() => {
     if (open) {
       setQuery('');
@@ -145,7 +150,7 @@ export function CommandPalette() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onKeyDown}
-                placeholder="搜索服务器、页面或操作…"
+                placeholder={t('commandPalette.placeholder')}
                 className="w-full bg-transparent text-sm text-white placeholder:text-white/35 focus:outline-none"
               />
               <kbd className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold text-white/50">
@@ -156,7 +161,7 @@ export function CommandPalette() {
             <div className="max-h-[46vh] overflow-y-auto p-2">
               {filtered.length === 0 && (
                 <div className="px-4 py-10 text-center text-sm text-white/40">
-                  未找到匹配项
+                  {t('commandPalette.empty')}
                 </div>
               )}
               {filtered.map((item, i) => (
@@ -184,9 +189,9 @@ export function CommandPalette() {
             </div>
 
             <div className="flex items-center gap-3 border-t border-white/10 px-4 py-2 text-[11px] text-white/35">
-              <span>↑↓ 选择</span>
-              <span>↵ 执行</span>
-              <span>esc 关闭</span>
+              <span>↑↓ {t('common.search')}</span>
+              <span>↵ {t('common.confirm')}</span>
+              <span>esc {t('common.close')}</span>
             </div>
           </motion.div>
         </motion.div>

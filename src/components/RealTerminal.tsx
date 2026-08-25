@@ -6,6 +6,7 @@ import { Loader2, RefreshCw } from 'lucide-react';
 import type { Server } from '../types';
 import { sshUrl } from '../api/client';
 import { usePrefsStore } from '../store/usePrefsStore';
+import { useT } from '../i18n/useT';
 
 type ConnState = 'connecting' | 'ready' | 'closed' | 'error';
 
@@ -15,9 +16,9 @@ interface RealTerminalProps {
 
 /**
  * 真实 SSH 终端：xterm.js + WebSocket 连接到后端（Node.js + ssh2）。
- * 数据流：终端输入 → WS → ssh2 shell；ssh2 输出 → WS → 终端。
  */
 export function RealTerminal({ server }: RealTerminalProps) {
+  const { t } = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<ConnState>('connecting');
   const [error, setError] = useState('');
@@ -37,7 +38,7 @@ export function RealTerminal({ server }: RealTerminalProps) {
     const updateState = (s: ConnState) => {
       stateRef.current = s;
       setState(s);
-      if (s === 'error') setError((prev) => prev || '连接失败');
+      if (s === 'error') setError((prev) => prev || t('realTerminal.error'));
     };
     updateState('connecting');
     setError('');
@@ -86,7 +87,7 @@ export function RealTerminal({ server }: RealTerminalProps) {
         return;
       }
 
-      ws.onopen = () => term.write('\x1b[90m▲ 正在建立 SSH 会话…\x1b[0m\r\n');
+      ws.onopen = () => term.write('\x1b[90m▲ ' + t('realTerminal.connecting') + '\x1b[0m\r\n');
 
       ws.onmessage = (ev) => {
         let msg: { type?: string; data?: string; state?: string; message?: string };
@@ -100,12 +101,12 @@ export function RealTerminal({ server }: RealTerminalProps) {
         } else if (msg.type === 'status') {
           if (msg.state === 'ready') {
             updateState('ready');
-            term.write(`\x1b[32m✓ 已连接 ${username}@${host}\x1b[0m\r\n`);
+            term.write(`\x1b[32m✓ ${username}@${host}\x1b[0m\r\n`);
           } else if (msg.state === 'closed') {
             updateState('closed');
-            term.write('\r\n\x1b[33m连接已关闭\x1b[0m\r\n');
+            term.write('\r\n\x1b[33m' + t('realTerminal.closed') + '\x1b[0m\r\n');
           } else if (msg.state === 'error') {
-            setError(msg.message ?? '连接失败');
+            setError(msg.message ?? t('realTerminal.error'));
             updateState('error');
           }
         }
@@ -113,7 +114,7 @@ export function RealTerminal({ server }: RealTerminalProps) {
 
       ws.onerror = () => {
         if (disposed) return;
-        setError('WebSocket 连接错误');
+        setError(t('realTerminal.error'));
         updateState('error');
       };
 
@@ -149,9 +150,10 @@ export function RealTerminal({ server }: RealTerminalProps) {
       ws?.close();
       term.dispose();
     };
-  }, [id, host, username, sessionKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, host, username, sessionKey, t]);
 
-  // 终端字号 / 字体变化实时应用
+  // Re-apply font settings
   useEffect(() => {
     const term = termRef.current;
     if (!term) return;
@@ -168,27 +170,26 @@ export function RealTerminal({ server }: RealTerminalProps) {
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full px-3 py-2" />
 
-      {/* 状态遮罩 */}
       {state !== 'ready' && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/30 backdrop-blur-sm">
           {state === 'connecting' && (
             <div className="flex items-center gap-2 text-sm text-white/70">
-              <Loader2 className="h-4 w-4 animate-spin" /> 正在连接 {host}:{server.port}…
+              <Loader2 className="h-4 w-4 animate-spin" /> {t('realTerminal.connecting')} {host}:{server.port}…
             </div>
           )}
           {state === 'error' && (
             <div className="flex flex-col items-center gap-3 text-center">
-              <span className="max-w-xs text-sm text-rose-300">连接失败：{error}</span>
+              <span className="max-w-xs text-sm text-rose-300">{t('realTerminal.error')}: {error}</span>
               <button onClick={() => setSessionKey((k) => k + 1)} className="glass-btn">
-                <RefreshCw className="h-4 w-4" /> 重试
+                <RefreshCw className="h-4 w-4" /> {t('realTerminal.retry')}
               </button>
             </div>
           )}
           {state === 'closed' && (
             <div className="flex flex-col items-center gap-3 text-center">
-              <span className="text-sm text-white/60">SSH 会话已结束</span>
+              <span className="text-sm text-white/60">{t('realTerminal.closed')}</span>
               <button onClick={() => setSessionKey((k) => k + 1)} className="glass-btn">
-                <RefreshCw className="h-4 w-4" /> 重新连接
+                <RefreshCw className="h-4 w-4" /> {t('realTerminal.retry')}
               </button>
             </div>
           )}

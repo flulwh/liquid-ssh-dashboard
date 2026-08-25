@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Loader2, LockKeyhole, ServerCog, TerminalSquare, User, UserPlus } from 'lucide-react';
 import { AuroraBackground } from './AuroraBackground';
 import { getApiBase, login, register, setApiBase } from '../api/client';
+import { useT } from '../i18n/useT';
 import { cn } from '../utils/cn';
 
 interface LoginScreenProps {
@@ -13,6 +14,7 @@ type Mode = 'login' | 'register';
 
 /** 登录 / 创建账户页：后端地址 + 账号 + 密码，全部由用户输入，前端不内置任何默认凭据/地址 */
 export function LoginScreen({ onSuccess }: LoginScreenProps) {
+  const { t } = useT();
   const [mode, setMode] = useState<Mode>('login');
   const [api, setApi] = useState(getApiBase());
   const [username, setUsername] = useState('');
@@ -30,16 +32,16 @@ export function LoginScreen({ onSuccess }: LoginScreenProps) {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!api || !username || !password) {
-      setError('请填写后端地址、用户名和密码');
+      setError(t('login.errorEmpty'));
       return;
     }
     if (mode === 'register') {
       if (password !== confirm) {
-        setError('两次输入的密码不一致');
+        setError(t('login.errorMismatch'));
         return;
       }
       if (password.length < 6) {
-        setError('密码至少 6 位');
+        setError(t('login.errorTooShort'));
         return;
       }
     }
@@ -81,7 +83,7 @@ export function LoginScreen({ onSuccess }: LoginScreenProps) {
             Liquid <span className="text-gradient">SSH</span>
           </h1>
           <p className="mt-1 text-sm text-white/45">
-            {isRegister ? '创建账户并连接你的 SSH 后端' : '连接你的 SSH 后端服务'}
+            {isRegister ? t('login.registerSubtitle') : t('login.subtitle')}
           </p>
         </div>
 
@@ -97,7 +99,7 @@ export function LoginScreen({ onSuccess }: LoginScreenProps) {
                 mode === m ? 'bg-white/15 text-white' : 'text-white/50 hover:text-white/80'
               )}
             >
-              {m === 'login' ? '登录' : '创建账户'}
+              {m === 'login' ? t('login.tabLogin') : t('login.tabRegister')}
             </button>
           ))}
         </div>
@@ -107,38 +109,38 @@ export function LoginScreen({ onSuccess }: LoginScreenProps) {
             icon={ServerCog}
             value={api}
             onChange={(v) => setApi(v)}
-            placeholder="http://localhost:8787"
+            placeholder={t('login.backendPlaceholder')}
             type="text"
             autoComplete="off"
-            label="后端 API 地址"
+            label={t('login.backendLabel')}
           />
           <Field
             icon={User}
             value={username}
             onChange={(v) => setUsername(v)}
-            placeholder={isRegister ? '设置用户名' : '用户名'}
+            placeholder={isRegister ? t('login.usernamePlaceholderRegister') : t('login.usernamePlaceholder')}
             type="text"
             autoComplete="username"
-            label="用户名"
+            label={t('login.usernameLabel')}
           />
           <Field
             icon={LockKeyhole}
             value={password}
             onChange={(v) => setPassword(v)}
-            placeholder={isRegister ? '密码（至少 6 位）' : '密码'}
+            placeholder={isRegister ? t('login.passwordPlaceholderRegister') : t('login.passwordPlaceholder')}
             type="password"
             autoComplete={isRegister ? 'new-password' : 'current-password'}
-            label="密码"
+            label={t('login.passwordLabel')}
           />
           {isRegister && (
             <Field
               icon={LockKeyhole}
               value={confirm}
               onChange={(v) => setConfirm(v)}
-              placeholder="再次输入密码"
+              placeholder={t('login.confirmPlaceholder')}
               type="password"
               autoComplete="new-password"
-              label="确认密码"
+              label={t('login.confirmLabel')}
             />
           )}
 
@@ -156,17 +158,15 @@ export function LoginScreen({ onSuccess }: LoginScreenProps) {
             ) : null}
             {busy
               ? isRegister
-                ? '创建中…'
-                : '登录中…'
+                ? t('login.submittingRegister')
+                : t('login.submitting')
               : isRegister
-                ? '创建账户'
-                : '登录'}
+                ? t('login.submitRegister')
+                : t('login.submit')}
           </button>
 
           <p className="text-center text-xs text-white/35">
-            {isRegister
-              ? '账户由后端创建；密码仅用于换取 JWT，不会保存在浏览器中'
-              : '账号密码仅用于换取后端 JWT，不会保存在浏览器中'}
+            {isRegister ? t('login.hintRegister') : t('login.hintLogin')}
           </p>
         </form>
       </motion.div>

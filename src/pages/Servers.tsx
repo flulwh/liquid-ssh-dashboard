@@ -5,6 +5,7 @@ import type { Server } from '../types';
 import { ServerCard } from '../components/ServerCard';
 import { GlassCard } from '../components/GlassCard';
 import { useServerStore } from '../store/useServerStore';
+import { useT } from '../i18n/useT';
 import { cn } from '../utils/cn';
 
 interface FormState {
@@ -24,6 +25,7 @@ const emptyForm: FormState = {
 };
 
 export default function Servers() {
+  const { t } = useT();
   const { servers, loading, addServer, updateServer, removeServer } = useServerStore();
   const [query, setQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -66,7 +68,7 @@ export default function Servers() {
 
   const submit = async () => {
     const base = {
-      name: form.name.trim() || '未命名服务器',
+      name: form.name.trim() || 'Unnamed',
       host: form.host.trim(),
       port: Number(form.port) || 22,
       username: form.username.trim() || 'root',
@@ -113,14 +115,12 @@ export default function Servers() {
       <div className="flex flex-wrap items-end justify-between gap-4 px-1">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-            服务器<span className="text-gradient">管理</span>
+            {t('servers.title')}
           </h1>
-          <p className="mt-1 text-sm text-white/45">
-            真实后端配置 · 新增 / 编辑 / 删除均持久化到 servers.json
-          </p>
+          <p className="mt-1 text-sm text-white/45">{t('servers.subtitle')}</p>
         </div>
         <button onClick={openAdd} className="glass-btn !bg-white/10 font-semibold text-white">
-          <Plus className="h-4 w-4" /> 添加服务器
+          <Plus className="h-4 w-4" /> {t('servers.add')}
         </button>
       </div>
 
@@ -131,7 +131,7 @@ export default function Servers() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="搜索名称 / IP / 用户…"
+            placeholder={t('servers.search')}
             className="w-full bg-transparent text-sm text-white placeholder:text-white/35 focus:outline-none"
           />
         </div>
@@ -140,14 +140,14 @@ export default function Servers() {
       {/* 加载态 */}
       {loading ? (
         <GlassCard className="flex items-center justify-center gap-3 py-16 text-white/50">
-          <Loader2 className="h-5 w-5 animate-spin" /> 正在从后端加载服务器…
+          <Loader2 className="h-5 w-5 animate-spin" /> {t('servers.loading')}
         </GlassCard>
       ) : filtered.length === 0 ? (
         <GlassCard className="flex flex-col items-center gap-3 py-16 text-center">
           <ServerIcon className="h-8 w-8 text-white/30" />
-          <p className="text-white/50">尚未配置任何服务器</p>
+          <p className="text-white/50">{t('servers.empty')}</p>
           <button onClick={openAdd} className="glass-btn">
-            <Plus className="h-4 w-4" /> 添加第一台服务器
+            <Plus className="h-4 w-4" /> {t('servers.addFirst')}
           </button>
         </GlassCard>
       ) : (
@@ -181,7 +181,7 @@ export default function Servers() {
             <div className="p-6">
               <div className="mb-5 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">
-                  {editing ? '编辑服务器' : '添加服务器'}
+                  {editing ? t('servers.editDialogTitle') : t('servers.addDialogTitle')}
                 </h3>
                 <button onClick={() => setModalOpen(false)} className="glass-btn !p-2">
                   <X className="h-4 w-4" />
@@ -189,45 +189,45 @@ export default function Servers() {
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label="名称">
+                <Field label={t('servers.name')}>
                   <input
                     className={inputCls}
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Prod · API Gateway"
+                    placeholder={t('servers.namePlaceholder')}
                   />
                 </Field>
-                <Field label="主机 / IP">
+                <Field label={t('servers.host')}>
                   <input
                     className={inputCls}
                     value={form.host}
                     onChange={(e) => setForm({ ...form, host: e.target.value })}
-                    placeholder="10.20.0.11"
+                    placeholder={t('servers.hostPlaceholder')}
                   />
                 </Field>
-                <Field label="端口">
+                <Field label={t('servers.port')}>
                   <input
                     className={inputCls}
                     value={form.port}
                     onChange={(e) => setForm({ ...form, port: e.target.value })}
-                    placeholder="22"
+                    placeholder={t('servers.portPlaceholder')}
                   />
                 </Field>
-                <Field label="用户名">
+                <Field label={t('servers.username')}>
                   <input
                     className={inputCls}
                     value={form.username}
                     onChange={(e) => setForm({ ...form, username: e.target.value })}
-                    placeholder="root"
+                    placeholder={t('servers.usernamePlaceholder')}
                   />
                 </Field>
-                <Field label="密码（选填）" className="sm:col-span-2">
+                <Field label={t('servers.password')} className="sm:col-span-2">
                   <input
                     type="password"
                     className={inputCls}
                     value={form.password ?? ''}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    placeholder={editing ? '留空则保持原密码' : '当前仅支持密码认证'}
+                    placeholder={editing ? t('servers.passwordPlaceholderKeep') : t('servers.passwordPlaceholderNew')}
                   />
                 </Field>
               </div>
@@ -236,7 +236,7 @@ export default function Servers() {
 
               <div className="mt-6 flex justify-end gap-2">
                 <button onClick={() => setModalOpen(false)} className="glass-btn">
-                  取消
+                  {t('servers.cancel')}
                 </button>
                 <button
                   onClick={submit}
@@ -244,7 +244,7 @@ export default function Servers() {
                   className="glass-btn !bg-white/10 font-semibold text-white disabled:opacity-40"
                 >
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  {editing ? '保存修改' : '添加服务器'}
+                  {editing ? t('servers.save') : t('servers.saveNew')}
                 </button>
               </div>
             </div>
@@ -260,18 +260,17 @@ export default function Servers() {
               <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-rose-400/15">
                 <X className="h-6 w-6 text-rose-300" />
               </div>
-              <h3 className="text-lg font-semibold text-white">删除服务器？</h3>
+              <h3 className="text-lg font-semibold text-white">{t('servers.deleteTitle')}</h3>
               <p className="mt-2 text-sm text-white/50">
-                即将从 <span className="font-mono text-white">servers.json</span> 删除{' '}
-                <span className="text-white">{deleting.name}</span>（{deleting.host}），该操作不可撤销。
+                {t('servers.deleteMessage', { name: deleting.name, host: deleting.host })}
               </p>
               <div className="mt-6 flex justify-center gap-2">
                 <button onClick={() => setDeleting(null)} className="glass-btn">
-                  取消
+                  {t('servers.deleteCancel')}
                 </button>
                 <button onClick={confirmDelete} className="glass-btn !bg-rose-500/80 font-semibold text-white">
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  确认删除
+                  {t('servers.deleteConfirm')}
                 </button>
               </div>
             </div>

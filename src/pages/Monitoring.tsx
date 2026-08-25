@@ -22,6 +22,7 @@ import { GlassCard } from '../components/GlassCard';
 import { useServerStore } from '../store/useServerStore';
 import { usePrefsStore } from '../store/usePrefsStore';
 import { fetchServerLoad } from '../api/client';
+import { useT } from '../i18n/useT';
 import { cn } from '../utils/cn';
 
 interface SeriesPoint {
@@ -42,6 +43,7 @@ const MAX_POINTS = 60; // 约 10 分钟
 
 /** 监控：每台服务器的实时负载 + 历史趋势曲线（真实 SSH 命令轮询） */
 export default function Monitoring() {
+  const { t, i18n } = useT();
   const { servers } = useServerStore();
   const autoRefreshSec = usePrefsStore((s) => s.autoRefreshSec);
   const POLL_MS = autoRefreshSec * 1000;
@@ -49,6 +51,7 @@ export default function Monitoring() {
   const [tick, setTick] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const lastTickRef = useRef(0);
+  const timeLocale = i18n.language?.startsWith('en') ? 'en-US' : 'zh-CN';
 
   useEffect(() => {
     let cancelled = false;
@@ -142,15 +145,15 @@ export default function Monitoring() {
       <div className="flex flex-wrap items-end justify-between gap-4 px-0.5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">监控</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">{t('monitoring.title')}</h1>
             <span className="flex items-center gap-1.5">
               <span className={cn('h-2 w-2 rounded-full', withLoad.length ? 'bg-emerald-400' : 'bg-white/30')} />
-              <span className="text-xs text-white/40">实时轮询 {POLL_MS / 1000}s</span>
+              <span className="text-xs text-white/40">{t('monitoring.realtime', { n: POLL_MS / 1000 })}</span>
             </span>
           </div>
-          <p className="mt-1 text-sm text-white/45">每台服务器 CPU / 内存 / 磁盘 负载与趋势</p>
+          <p className="mt-1 text-sm text-white/45">{t('monitoring.subtitle')}</p>
         </div>
-        <button onClick={refresh} disabled={refreshing} className="glass-btn !p-2" title="刷新">
+        <button onClick={refresh} disabled={refreshing} className="glass-btn !p-2" title={t('monitoring.refresh')}>
           <RefreshCw className={cn('h-4 w-4', refreshing && 'animate-spin')} />
         </button>
       </div>
@@ -158,24 +161,25 @@ export default function Monitoring() {
       {servers.length === 0 ? (
         <GlassCard className="flex flex-col items-center gap-3 py-16 text-center">
           <ServerIcon className="h-8 w-8 text-white/25" />
-          <p className="text-sm text-white/45">尚未配置服务器</p>
+          <p className="text-sm text-white/45">{t('monitoring.noServers')}</p>
         </GlassCard>
       ) : list.length === 0 ? (
         <GlassCard className="flex flex-col items-center gap-3 py-16 text-center">
           <Activity className="h-8 w-8 text-white/25" />
-          <p className="text-sm text-white/45">正在采集负载数据…</p>
+          <p className="text-sm text-white/45">{t('monitoring.noDataCard')}</p>
         </GlassCard>
       ) : (
         <div className="grid gap-5 lg:grid-cols-2">
-          {list.map((t, i) => {
-            const srv = servers.find((s) => s.id === t.serverId);
+          {list.map((tr, i) => {
+            const srv = servers.find((s) => s.id === tr.serverId);
             return (
               <TrendCard
-                key={t.serverId}
-                title={srv?.name ?? '未知服务器'}
+                key={tr.serverId}
+                title={srv?.name ?? tr.serverId}
                 endpoint={srv ? `${srv.username}@${srv.host}:${srv.port}` : ''}
-                trend={t}
+                trend={tr}
                 delay={i * 0.05}
+                timeLocale={timeLocale}
               />
             );
           })}
@@ -186,14 +190,14 @@ export default function Monitoring() {
         <GlassCard className="flex items-start gap-3 p-4 text-sm">
           <WifiOff className="mt-0.5 h-4 w-4 shrink-0 text-white/40" />
           <div className="text-white/50">
-            <p className="mb-1 font-medium text-white/80">以下服务器无法采集负载</p>
+            <p className="mb-1 font-medium text-white/80">{t('monitoring.cannotCollectTitle')}</p>
             <ul className="space-y-1 text-xs text-white/40">
-              {noData.map((t) => {
-                const srv = servers.find((s) => s.id === t.serverId);
+              {noData.map((tr) => {
+                const srv = servers.find((s) => s.id === tr.serverId);
                 return (
-                  <li key={t.serverId}>
-                    {srv?.name ?? t.serverId}
-                    {t.error ? ` — ${t.error}` : ' — 未配置连接凭据'}
+                  <li key={tr.serverId}>
+                    {srv?.name ?? tr.serverId}
+                    {tr.error ? ` — ${t('monitoring.cannotCollectPrefix')}${tr.error}` : ` — ${t('monitoring.cannotCollectNoCreds')}`}
                   </li>
                 );
               })}
@@ -210,15 +214,18 @@ function TrendCard({
   endpoint,
   trend,
   delay,
+  timeLocale,
 }: {
   title: string;
   endpoint: string;
   trend: ServerTrend;
   delay: number;
+  timeLocale: string;
 }) {
+  const { t } = useT();
   const latest = trend.latest;
   const data = trend.series.map((p) => ({
-    time: new Date(p.t).toLocaleTimeString('zh-CN', { hour12: false }),
+    time: new Date(p.t).toLocaleTimeString(timeLocale, { hour12: false }),
     cpu: p.cpu,
     mem: p.mem,
     disk: p.disk,
@@ -242,7 +249,7 @@ function TrendCard({
               <div className="text-2xl font-semibold tabular-nums text-white">
                 {Number.isFinite(latest.cpu) ? `${Math.round(latest.cpu)}%` : '—'}
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-white/40">CPU</div>
+              <div className="text-[10px] uppercase tracking-wider text-white/40">{t('monitoring.cpu')}</div>
             </div>
           ) : null}
         </div>
@@ -295,16 +302,16 @@ function TrendCard({
                     }}
                     labelStyle={{ color: 'rgba(255,255,255,0.6)' }}
                   />
-                  <Area type="monotone" dataKey="cpu" name="CPU" stroke="#a78bfa" strokeWidth={1.6} fill="url(#cpuGrad)" />
-                  <Area type="monotone" dataKey="mem" name="内存" stroke="#34d399" strokeWidth={1.6} fill="url(#memGrad)" />
-                  <Area type="monotone" dataKey="disk" name="磁盘" stroke="#38bdf8" strokeWidth={1.6} fill="url(#diskGrad)" />
+                  <Area type="monotone" dataKey="cpu" name={t('monitoring.cpu')} stroke="#a78bfa" strokeWidth={1.6} fill="url(#cpuGrad)" />
+                  <Area type="monotone" dataKey="mem" name={t('monitoring.mem')} stroke="#34d399" strokeWidth={1.6} fill="url(#memGrad)" />
+                  <Area type="monotone" dataKey="disk" name={t('monitoring.disk')} stroke="#38bdf8" strokeWidth={1.6} fill="url(#diskGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </>
         ) : (
           <p className="text-xs text-white/40">
-            {trend.error ? `无法采集：${trend.error}` : '等待采集…'}
+            {trend.error ? `${t('monitoring.cannotCollectPrefix')}${trend.error}` : t('monitoring.waitingFirst')}
           </p>
         )}
       </GlassCard>
@@ -322,11 +329,12 @@ function MetricTiles({
   memPercent: number;
   diskPercent: number;
 }) {
+  const { t } = useT();
   return (
     <>
-      <Tile icon={Cpu} label="CPU" percent={cpu} />
-      <Tile icon={MemoryStick} label="内存" percent={memPercent} />
-      <Tile icon={HardDrive} label="磁盘" percent={diskPercent} />
+      <Tile icon={Cpu} label={t('monitoring.cpu')} percent={cpu} />
+      <Tile icon={MemoryStick} label={t('monitoring.mem')} percent={memPercent} />
+      <Tile icon={HardDrive} label={t('monitoring.disk')} percent={diskPercent} />
     </>
   );
 }
