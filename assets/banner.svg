@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-label="Liquid SSH Dashboard banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d0b14"/>
+      <stop offset="0.55" stop-color="#17122a"/>
+      <stop offset="1" stop-color="#1f1440"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b5cd6"/>
+      <stop offset="0.5" stop-color="#a06bff"/>
+      <stop offset="1" stop-color="#22d3ee37"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e9e4ff"/>
+      <stop offset="0.5" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#c9e7ff"/>
+    </linearGradient>
+    <filter id="blur" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="400" rx="24" fill="url(#bg)"/>
+
+  <!-- glow blobs -->
+  <circle cx="180" cy="90" r="150" fill="url(#glow)" opacity="0.5" filter="url(#blur)"/>
+  <circle cx="1010" cy="330" r="180" fill="#22d3ee" opacity="0.18" filter="url(#blur)"/>
+  <circle cx="1050" cy="70" r="120" fill="#ff9dc3" opacity="0.12" filter="url(#blur)"/>
+
+  <!-- glass panel -->
+  <rect x="330" y="120" width="540" height="150" rx="26" fill="#ffffff" opacity="0.045" stroke="#ffffff" stroke-opacity="0.10"/>
+
+  <!-- decorative glass squares -->
+  <g opacity="0.35">
+    <rect x="230" y="170" width="26" height="26" rx="8" fill="#a06bff" opacity="0.5"/>
+    <rect x="945" y="200" width="22" height="22" rx="7" fill="#22d3ee" opacity="0.45"/>
+    <rect x="905" y="150" width="14" height="14" rx="4" fill="#ffffff" opacity="0.35"/>
+    <rect x="262" y="208" width="14" height="14" rx="4" fill="#ffffff" opacity="0.25"/>
+    <circle cx="290" cy="120" r="5" fill="#22d3ee" opacity="0.7"/>
+    <circle cx="920" cy="330" r="6" fill="#a06bff" opacity="0.6"/>
+  </g>
+
+  <!-- dotted grid -->
+  <g fill="#ffffff" opacity="0.08">
+    <circle cx="150" cy="330" r="2"/><circle cx="170" cy="330" r="2"/><circle cx="190" cy="330" r="2"/>
+    <circle cx="1010" cy="140" r="2"/><circle cx="1030" cy="140" r="2"/><circle cx="1050" cy="140" r="2"/>
+    <circle cx="1020" cy="160" r="2"/><circle cx="1040" cy="160" r="2"/><circle cx="1060" cy="160" r="2"/>
+  </g>
+
+  <!-- kicker -->
+  <text x="600" y="70" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="15" fill="#9a92b8" letter-spacing="6">OPEN SOURCE · REACT · TYPESCRIPT · MATERIAL DESIGN 3</text>
+
+  <!-- title -->
+  <text x="600" y="200" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="48" font-weight="700" fill="url(#title)" filter="url(#soft)">Liquid SSH Dashboard</text>
+
+  <!-- tagline -->
+  <text x="600" y="238" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="19" fill="#c7b8f0">Modern Web SSH terminal · Real-time monitor · SFTP files for developers</text>
+
+  <!-- buttons -->
+  <g>
+    <rect x="470" y="278" width="122" height="40" rx="20" fill="#6750a4"/>
+    <text x="531" y="304" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="16" font-weight="600" fill="#ffffff">★ Star</text>
+  </g>
+  <g>
+    <rect x="608" y="278" width="140" height="40" rx="20" fill="#ffffff" opacity="0.10" stroke="#ffffff" stroke-opacity="0.25"/>
+    <text x="678" y="304" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="16" font-weight="600" fill="#e9e4ff">Quick Start →</text>
+  </g>
+</svg>
