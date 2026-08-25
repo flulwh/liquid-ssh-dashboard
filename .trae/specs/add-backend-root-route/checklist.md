@@ -1,3 +1,0 @@
-- [x] 访问 `http://localhost:8787/` 返回 HTTP 200 服务信息 JSON，而非「Cannot GET /」
-- [x] 访问不存在的路径（如 `/api/nope`）返回 HTTP 404 JSON，而非 HTML「Cannot GET ...」
-- [x] `server/` 目录 `npm run typecheck` 通过
